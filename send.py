@@ -1,24 +1,26 @@
-# -*- coding: utf-8 -*-
+import csv
 from tencentcloud.common import credential
 from tencentcloud.common.exception.tencent_cloud_sdk_exception import TencentCloudSDKException
-# 导入对应产品模块的client models。
 from tencentcloud.sms.v20210111 import sms_client, models
-
-# 导入可选配置类
 from tencentcloud.common.profile.client_profile import ClientProfile
 from tencentcloud.common.profile.http_profile import HttpProfile
 
-import os
+def load_credentials_from_csv(csv_file="SecretKey.csv"):
+    """从 CSV 文件加载腾讯云 SecretId 和 SecretKey"""
+    try:
+        with open(csv_file, mode="r") as file:
+            reader = csv.DictReader(file)
+            row = next(reader)  # 读取第一行
+            return row["SecretId"], row["SecretKey"]
+    except FileNotFoundError:
+        raise Exception(f"CSV file '{csv_file}' not found. Please provide SecretId and SecretKey.")
+    except KeyError:
+        raise Exception("Invalid CSV format. Expected columns: 'SecretId', 'SecretKey'.")
 
 try:
-    # 实例化一个认证对象，入参需要传入腾讯云账户secretId，secretKey。
-    # 为了保护密钥安全，建议将密钥设置在环境变量中或者配置文件中。
-    # 硬编码密钥到代码中有可能随代码泄露而暴露，有安全隐患，并不推荐。
-    # SecretId、SecretKey 查询: https://console.cloud.tencent.com/cam/capi
-    cred = credential.Credential("AKIDnSxFKOEsIVVIsENPFtLZZLtHSP76vYyA", "3sTrLcgXAZkiT9duxnRsIUTFn8GCza7Z") # √
-    # cred = credential.Credential(
-    #     os.environ.get("TENCENTCLOUD_SECRET_ID"),
-    #     os.environ.get("TENCENTCLOUD_SECRET_KEY"))
+    # 从 CSV 加载密钥
+    secret_id, secret_key = load_credentials_from_csv()
+    cred = credential.Credential(secret_id, secret_key)
 
     # 实例化一个http选项，可选的，没有特殊需求可以跳过。
     httpProfile = HttpProfile()
