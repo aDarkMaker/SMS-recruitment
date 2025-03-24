@@ -15,7 +15,7 @@ try:
     # 为了保护密钥安全，建议将密钥设置在环境变量中或者配置文件中。
     # 硬编码密钥到代码中有可能随代码泄露而暴露，有安全隐患，并不推荐。
     # SecretId、SecretKey 查询: https://console.cloud.tencent.com/cam/capi
-    cred = credential.Credential("AKIDnSxFKOEsIVVIsENPFtLZZLtHSP76vYyA", "3sTrLcgXAZkiT9duxnRsIUTFn8GCza7Z") # √
+    cred = credential.Credential("TENCENTCLOUD_SECRET_ID", "TENCENTCLOUD_SECRET_KEY") 
     # cred = credential.Credential(
     #     os.environ.get("TENCENTCLOUD_SECRET_ID"),
     #     os.environ.get("TENCENTCLOUD_SECRET_KEY"))
@@ -39,7 +39,7 @@ try:
 
     req = models.SendSmsRequest()
 
-    req.SmsSdkAppId = "1400973406" # √
+    req.SmsSdkAppId = "xxxxxx" 
     # 短信签名内容: 使用 UTF-8 编码，必须填写已审核通过的签名
     # 签名信息可前往 [国内短信](https://console.cloud.tencent.com/smsv2/csms-sign) 或 [国际/港澳台短信](https://console.cloud.tencent.com/smsv2/isms-sign) 的签名管理查看
     req.SignName = "腾讯云"
@@ -50,7 +50,7 @@ try:
     req.TemplateParamSet = ["1234"]
     # 下发手机号码，采用 E.164 标准，+[国家或地区码][手机号]
     # 示例如：+8613711112222， 其中前面有一个+号 ，86为国家码，13711112222为手机号，最多不要超过200个手机号
-    req.PhoneNumberSet = ["+8615623169098", "+8615288361907"]
+    req.PhoneNumberSet = ["+86xxx"]
     # 用户的 session 内容（无需要可忽略）: 可以携带用户侧 ID 等上下文信息，server 会原样返回
     req.SessionContext = ""
     # 短信码号扩展号（无需要可忽略）: 默认未开通，如需开通请联系 [腾讯云短信小助手]
