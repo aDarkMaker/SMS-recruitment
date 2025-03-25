@@ -19,25 +19,6 @@ st.set_page_config(
 if 'sent_records' not in st.session_state:
     st.session_state.sent_records = []
 
-# 自定义CSS样式（全局生效）
-st.markdown("""
-<style>
-    /* 所有表格内容居中 */
-    .stDataFrame th, .stDataFrame td {
-        text-align: center !important;
-    }
-    /* 表格整体居中 */
-    [data-testid="stDataFrame"] {
-        margin: 0 auto !important;
-    }
-    /* 短信模板自适应高度 */
-    .stTextArea textarea {
-        min-height: 200px !important;
-        height: auto !important;
-    }
-</style>
-""", unsafe_allow_html=True)
-
 def send_sms(df, template_params):
     """发送短信的核心函数"""
     try:
@@ -130,6 +111,7 @@ def preview_message(template, row):
 
 # 页面布局
 st.title("📨 招新短信发送助手")
+st.markdown("---")
 
 # 侧边栏配置
 with st.sidebar:
@@ -146,7 +128,7 @@ with st.sidebar:
     template = st.text_area(
         "短信模板内容",
         value="【招生宣传联合会】亲爱的{name}同学：我们是华中科技大学招生宣传联合会，感谢你选择招生宣传联合会这个大家庭，第一轮面试将在{date}的{time}于{place}进行，预计二十分钟，请提前十分钟到场签到。我们期待你的精彩表现！收到请回复“姓名+是否能参加面试”，若无法按时到场参加面试请说明原因，我们将为你调整面试时间，谢谢！",
-        height=150,
+        height= 270,
         help="谨记，修改模版不会改变短信内容，仅供预览"
     )
     
@@ -159,47 +141,16 @@ if uploaded_file:
         # 读取Excel文件
         df = pd.read_excel(uploaded_file)
         
-        # 显示数据预览（带序号和居中样式）
+        # 显示数据预览
         st.subheader("数据预览")
+        st.dataframe(df.head(3), use_container_width=True)
         
-        # 创建带序号的预览数据
-        preview_df = df.head(3).copy()
-        preview_df.insert(0, "序号", range(1, len(preview_df)+1))  # 添加从1开始的序号列
-
-        # 生成居中样式的HTML表格
-        preview_html = preview_df.style\
-            .set_table_styles([
-                {'selector': 'th', 'props': [('text-align', 'center')]},
-                {'selector': 'td', 'props': [('text-align', 'center')]}
-            ])\
-            .hide(axis="index")\
-            .to_html()
-
-        # 显示带样式的表格
-        st.markdown(
-            f'<div style="margin: 10px 0;">{preview_html}</div>', 
-            unsafe_allow_html=True
-        )
-
         # 显示短信预览
         st.subheader("短信内容预览")
         sample_row = df.iloc[0]
         preview = preview_message(template, sample_row)
         if preview:
             st.code(preview, language="text")
-
-        # 添加全局表格居中样式
-        st.markdown("""
-        <style>
-            .stDataFrame th, .stDataFrame td {
-                text-align: center !important;
-            }
-            table {
-                margin-left: auto !important;
-                margin-right: auto !important;
-            }
-        </style>
-        """, unsafe_allow_html=True)
 
         # 发送流程
         if send_button:
