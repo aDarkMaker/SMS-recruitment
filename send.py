@@ -79,7 +79,7 @@ class SMSApp(TkinterDnD.Tk):
                 hwnd = self.winfo_id()
                 flash_info = FLASHWINFO(
                     hwnd=hwnd,
-                    dwFlags=0x3 | 0xC,  # FLASHW_TRAY | FLASHW_TIMERNOFG
+                    dwFlags=0x3 | 0xC, 
                     uCount=count,
                     dwTimeout=0
                 )
@@ -320,7 +320,6 @@ class SMSApp(TkinterDnD.Tk):
         self.destroy()
 
 if __name__ == "__main__":
-
     app = SMSApp()
     app.iconbitmap("icon.ico")
     app.protocol("WM_DELETE_WINDOW", app.on_closing)
