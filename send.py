@@ -13,122 +13,6 @@ from tencentcloud.common.profile.client_profile import ClientProfile
 from tencentcloud.common.profile.http_profile import HttpProfile
 import ctypes
 from ctypes import wintypes
-import platform
-from fontTools.ttLib import TTFont
-import shutil
-
-def checkfont():
-    font_name = "二字元濑户淘气体-闪"
-    font_file = f"{font_name}.TTF"
-    
-    # 检查字体是否已安装
-    if is_font_installed(font_name):
-        print(f"字体 '{font_name}' 已安装，无需操作。")
-        return
-    
-    # 检查当前目录是否有字体安装包
-    if not os.path.exists(font_file):
-        print(f"错误: 未找到字体安装包 '{font_file}'")
-        return
-    
-    # 安装字体
-    try:
-        install_font(font_file)
-        print(f"字体 '{font_name}' 安装成功！")
-    except Exception as e:
-        print(f"字体安装失败: {str(e)}")
-
-def is_font_installed(font_name):
-    """检查字体是否已安装"""
-    system = platform.system()
-    
-    if system == "Windows":
-        # Windows系统
-        import winreg
-        try:
-            key = winreg.OpenKey(winreg.HKEY_LOCAL_MACHINE, r"C:\\Windows\\Fonts")
-            i = 0
-            while True:
-                name, value, _ = winreg.EnumValue(key, i)
-                if font_name in name:
-                    return True
-                i += 1
-        except WindowsError:
-            pass
-    
-    elif system == "Darwin":
-        # macOS系统
-        font_dir = "/Library/Fonts/"
-        if os.path.exists(os.path.join(font_dir, f"{font_name}.ttf")):
-            return True
-    
-    elif system == "Linux":
-        # Linux系统
-        font_dirs = [
-            "/usr/share/fonts/",
-            "/usr/local/share/fonts/",
-            os.path.expanduser("~/.fonts/"),
-            os.path.expanduser("~/.local/share/fonts/")
-        ]
-        for font_dir in font_dirs:
-            if os.path.exists(os.path.join(font_dir, f"{font_name}.ttf")):
-                return True
-    
-    # 通过fontTools检查字体名称
-    try:
-        for font in TTFont.fonts:
-            if font_name in font:
-                return True
-    except:
-        pass
-    
-    return False
-
-def install_font(font_file):
-    """安装字体文件"""
-    system = platform.system()
-    font_name = os.path.splitext(os.path.basename(font_file))[0]
-    
-    if system == "Windows":
-        # Windows系统安装字体
-        import ctypes
-        import win32con
-        import win32gui
-        
-        # 复制字体到系统字体目录
-        fonts_dir = os.path.join(os.environ['WINDIR'], 'Fonts')
-        dest_path = os.path.join(fonts_dir, os.path.basename(font_file))
-        
-        # 如果文件已存在，先删除
-        if os.path.exists(dest_path):
-            os.remove(dest_path)
-        
-        shutil.copy2(font_file, dest_path)
-        
-        # 通知系统字体变化
-        hwnd = win32gui.GetDesktopWindow()
-        win32gui.SendMessage(hwnd, win32con.WM_FONTCHANGE, 0, 0)
-        ctypes.windll.gdi32.AddFontResourceW(dest_path)
-    
-    elif system == "Darwin":
-        # macOS系统安装字体
-        fonts_dir = "/Library/Fonts/"
-        dest_path = os.path.join(fonts_dir, os.path.basename(font_file))
-        shutil.copy2(font_file, dest_path)
-    
-    elif system == "Linux":
-        # Linux系统安装字体
-        fonts_dir = os.path.expanduser("~/.local/share/fonts/")
-        os.makedirs(fonts_dir, exist_ok=True)
-        dest_path = os.path.join(fonts_dir, os.path.basename(font_file))
-        shutil.copy2(font_file, dest_path)
-        
-        # 更新字体缓存
-        os.system("fc-cache -f -v")
-    
-    else:
-        raise Exception("不支持的操作系统")
-
 class SMSApp(TkinterDnD.Tk):
     def __init__(self):
         super().__init__()
@@ -436,7 +320,7 @@ class SMSApp(TkinterDnD.Tk):
         self.destroy()
 
 if __name__ == "__main__":
-    checkfont()
+
     app = SMSApp()
     app.iconbitmap("icon.ico")
     app.protocol("WM_DELETE_WINDOW", app.on_closing)
